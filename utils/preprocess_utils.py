@@ -1,5 +1,7 @@
-import numpy as np
 import cv2
+import numpy as np
+from skimage import transform as trans
+
 def align_faces(img, bbox=None, landmark=None, **kwargs):
     M = None
     # Do alignment using landmark points
@@ -12,7 +14,9 @@ def align_faces(img, bbox=None, landmark=None, **kwargs):
           [62.7299, 92.2041] ], dtype=np.float32 )
         src[:,0] += 8.0
         dst = landmark.astype(np.float32)
-        M = cv2.estimateAffine2D(dst,src)[0]
+        tform = trans.SimilarityTransform()
+        tform.estimate(dst, src)
+        M = tform.params[0:2,:]
         warped = cv2.warpAffine(img,M,(112,112), borderValue = 0.0)
         return warped
     

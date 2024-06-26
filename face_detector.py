@@ -45,6 +45,8 @@ class YoloDetector:
         print(model_path)
         config_path = os.path.join(self._class_path,'models/',config_name)
         state_dict = torch.load(model_path)
+        if 'model' in state_dict:
+            state_dict = state_dict['model'].state_dict()
         detector = Model(cfg=config_path)
         detector.load_state_dict(state_dict)
         detector = detector.to(self.device).float().eval()

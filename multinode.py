@@ -59,6 +59,7 @@ for i,pid in enumerate(local_pids):
             save_dir = osp.join(out_dir, pid, phase, view)
             os.makedirs(save_dir, exist_ok=True)
 
+            count = 0
             cap = cv2.VideoCapture(osp.join(in_dir, pid, phase, vid))
             while True:
                 ret, frame = cap.read()
@@ -66,12 +67,12 @@ for i,pid in enumerate(local_pids):
                     cap.release()
                     break
                 
+                count += 1
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 try:
                     bboxes, points = model.predict(frame)
                     crops = model.align(frame, points[0])
                     if len(crops):
-                        cv2.imwrite(osp.join(save_dir, f'{i:03d}.png'), cv2.cvtColor(crops[0], cv2.COLOR_RGB2BGR))
+                        cv2.imwrite(osp.join(save_dir, f'{count:03d}.png'), cv2.cvtColor(crops[0], cv2.COLOR_RGB2BGR))
                 except cv2.error:
                     pass
-            
